@@ -26,4 +26,4 @@ add_executable(${name} ${SOURCE_FILES})
 # OpenGl
 target_link_libraries(${name} glfw)
 
-cotire(${name})
+#cotire(${name})
