@@ -19,7 +19,7 @@ set(KAI_HOME ${CMAKE_SOURCE_DIR})
 
 # RakNet
 #set(RAKNET_DIR ${HOME}/External/RakNet)
-include(${KAI_HOME}/CMake/FindRakNet.cmake)
+#include(${KAI_HOME}/CMake/FindRakNet.cmake)
 
 ## for X11
 #link_directories(/usr/lib/x86_64-linux-gnu)
