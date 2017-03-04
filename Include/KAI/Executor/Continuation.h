@@ -9,76 +9,46 @@
 
 KAI_BEGIN
 
-class Executor;
-
-class Continuation : public Reflected
+struct IDebugWrite
 {
-public:
-	typedef Pointer</*const*/ Array> Code;
+	virtual void WriteDebugInfo(StringStream&, IDebugDescription const &) = 0;
+}
 
-	Object scope;
-	Pointer<Array> code;
-	Pointer<Array> args;
-	Pointer<String> source_code;
-	Pointer<int> index;
-	Pointer<bool> entered;
+// A code block represented as a sequence of Objects.
+struct Continuation : Reflected, IDebugWrite
+{
+	typedef Pointer<const Array> Code;
+	typedef Pointer<const String> SourceCode;
+	typedef Pointer<const Array> Arguments;
 
-	// if true, this is a 'top-level' continuation, so
-	// name resolution should stop here
-	//
-	// I hate this idea. needs to be re-thought through clearly.
-	Pointer<bool> scopeBreak;
+private:
+	SourceCode _sourceCode;
+	Arguments _args;
+	Code _code;
 
 public:
 	void Create();
 	bool Destroy();
 
-	template <class T>
-	Pointer<T> New() const
-	{
-		return Self->GetRegistry()->New<T>();
-	}
+	void Construct(Code, SourceCode = 0, Arguments = 0);
 
-	template <class T>
-	Pointer<T> New(const T &val) const
-	{
-		return Self->GetRegistry()->New<T>(val);
-	}
+	bool HasCode() const { return _code.Exists(); }
+	Code GetCode() const { return _code; }
 
-	void SetCode(Code);
-	void SetCode(Code, String const *source);
+	Pointer<String> GetSourceCode() const { return _sourceCode; }
+	void SetSourceCode(Pointer<String>);
 
-	Pointer<const Array> GetCode() const { return code; }
+	String DebugDescription() const;
 
-	void AddArg(Label const &arg) { args->Append(New(arg)); }
+	friend StringStream &operator<<(StringStream &, const Continuation &);
+	friend StringStream &operator>>(StringStream &, Continuation &);
+	friend BinaryStream &operator<<(BinaryStream &, const Continuation &);
+	friend BinaryStream &operator>>(BinaryStream &, Continuation &);
 
-	Code &GetCode() { return code; }
-
-	Pointer<String> GetSourceCode() const { return source_code; }
-	void SetSourceCode(const char *C);
-
-	void SetScope(Object const &Q) { scope = Q; }
-	Object GetScope() const { return scope; }
-	bool HasScope() const { return scope.Exists(); }
-
-	bool HasCode() const { return code.Exists(); }
-
-	int InitialStackDepth;
-
-	void Enter(Executor *exec);
-
-	// get next object in the continuation
-	bool Next() const;
-	bool Next(Object &) const;
-
-	String Show() const;
 	static void Register(Registry &);
-};
 
-StringStream &operator<<(StringStream &, const Continuation &);
-StringStream &operator>>(StringStream &, Continuation &);
-BinaryStream &operator<<(BinaryStream &, const Continuation &);
-BinaryStream &operator>>(BinaryStream &, Continuation &);
+	void WriteDebugInfo(StringStream&, IDebugDescription const &) override;
+};
 
 KAI_TYPE_TRAITS(
 	Continuation, 
