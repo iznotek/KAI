@@ -12,29 +12,55 @@
 
 KAI_BEGIN
 
+///
+/// Common to all Objects that are stored in a Registry.
+///
+/// An Object knows the Registry that made it, it's Class,
+/// and its Handle. 
+///
+/// Every Objecy has a unique Handle within its Registry.
+///
 class Object
 {
 private:
+	/// The type of thing this Object is
 	const ClassBase *class_base;
+
+	/// The Registry used to make this object
 	Registry *registry;
+
+	/// The unique Handle of this Object in its Registry
 	Handle handle;
 
 #ifdef KAI_CACHE_OBJECT_LOOKUPS
-	// these fields are used to cache results for speed
+	/// these fields are used to cache results for speed
 	int gcindex;
 	bool valid;
 	void *value;
 #endif
 
 public:
+	/// Switches that can be on or off for a given Object
 	enum Switch 
 	{ 
+		/// This Object has been Marked. This means it is reachable
+		/// by some other root Object in the Registry
 		Marked = 1, 
+		
+		/// If an Object is Managed, its lifetime is controlled by
+		/// its Registry
 		Managed = 2, 
+		
+		/// If Const, and Object cannot be Deref<>'d to a mutable value
 		Const = 4, 
+		
+		/// If Clean, I have no idea what this means anymore.
 		Clean = 8, 
-		// if set, when marking, will not mark children
+
+		/// If NoRecurse is set, then when Marking, will not mark children
 		NoRecurse = 16,
+		
+		/// The default switches for an Object
 		DefaultSwitches = Managed
 	};
 
@@ -47,6 +73,8 @@ public:
 	StorageBase &GetStorageBase() const;
 	int GetSwitches() const;
 
+	///@ {
+	/// All this to do with tri-color marking used by the Garbage Collector
 	ObjectColor::Color GetColor() const;
 	void SetColor(ObjectColor::Color C) const;
 	void SetColorRecursive(ObjectColor::Color C) const;
@@ -57,6 +85,7 @@ public:
 	void SetWhite() const { SetColor(ObjectColor::White); }
 	void SetGrey() const { SetColor(ObjectColor::Grey); }
 	void SetBlack() const { SetColor(ObjectColor::Black); }
+	///@}
 
 	Type::Number GetTypeNumber() const;
 	const ClassBase *GetClass() const { return class_base; }
@@ -122,55 +151,61 @@ public:
 
 	template <class T>
 	T &GetValue(const Label &L);
+
 	void Detach(const Label &L) const { Remove(L); }
 	void Detach(const Object &Q) const;
 	Dictionary const &GetDictionary() const;
+
+	///@{
+	/// Child management. These map directly to C++ fields
 	void SetChild(const Label &L, const Object &Q) const { Set(L, Q); }
 	Object GetChild(const Label &L) const { return Get(L); }
 	void RemoveChild(const Label &L) const { Remove(L); }
 	void DetachChild(const Label &L) const { Remove(L); }
 	void DetachChild(const Object &Q) const { Detach(Q); }
 	bool HasChild(const Label &L) const { return Has(L); }
+	///@}
 
 	Label GetLabel() const;
 
 	String ToString() const;
 	String ToXmlString() const;
 
-	// deref's Registry so must be in source file
+	///{@
+	/// allow an object to make other objects using its Registry
 	Object NewFromTypeNumber(Type::Number N) const;
 	Object NewFromClassName(String const &type_name) const;
+	///@}
 
 	void Assign(StorageBase &, StorageBase const &);
 
 	/// return the storage of the given other object within the registry that made this object
 	StorageBase *GetStorageBase(Handle other) const;
+
+	///@{
+	/// Properties are in system-space: they do not reflect C++ class instance members
 	void SetPropertyValue(Label const &, Object const &) const;
 	Object GetPropertyValue(Label const &) const;
-
 	void SetPropertyObject(Label const &, Object const &) const;
-	Object GetPropertyObject(Label const &) const;
-
 	bool HasProperty(Label const &name) const;
-
+	Object GetPropertyObject(Label const &) const;
+	void GetPropertyObjects(ObjectList &contained) const;
+	///@}
 
 	/// detach from parent
 	void Detach();
 
-	static void Register(Registry &);
-
-	/// detach from container
+	///@{
+	/// Container relations
 	void RemovedFromContainer(Object container) const;
-	
-	/// attach to container
 	void AddedToContainer(Object container) const;
+	void GetContainedObjects(ObjectList &contained) const;
+	///@}
 
 	StorageBase *GetBasePtr() const;
 	StorageBase *GetParentBasePtr() const;
 
 	typedef std::list<Object> ObjectList;
-	void GetPropertyObjects(ObjectList &contained) const;
-	void GetContainedObjects(ObjectList &contained) const;
 	void GetChildObjects(ObjectList &contained) const;
 	void GetAllReferencedObjects(ObjectList &contained) const;
 
@@ -213,10 +248,13 @@ public:
 	{
 		return ChildProxy(*this, L);
 	}
+
 	ChildProxy operator[](Label const &L)
 	{
 		return ChildProxy(*this, L);
 	}
+
+	static void Register(Registry &);
 
 protected:
 	Dictionary &GetDictionaryRef();
@@ -233,7 +271,6 @@ inline bool operator!=(Object const &A, Object const &B) { return !(A == B); }
 bool operator>(Object const &A, Object const &B);
 
 Object operator+(Object const &A, Object const &B);
-// WTF Object operator-(Object const &Object Absolute(Object const &A);
 
 KAI_TYPE_TRAITS(Object, Number::Object
 	, Properties::StringStreamInsert
@@ -242,11 +279,13 @@ KAI_TYPE_TRAITS(Object, Number::Object
 
 HashValue GetHash(Object const  &);
 
+///@{
+/// Marking objects for Garbage Collection
 void MarkObject(Object const &, bool = true);
 void MarkObjectAndChildren(Object const &, bool = true);
-
 void MarkObject(StorageBase &, bool = true);
 void MarkObjectAndChildren(StorageBase &, bool = true);
+///@}
 
 Object Duplicate(Object const &);
 

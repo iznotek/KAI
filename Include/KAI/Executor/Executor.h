@@ -10,22 +10,36 @@
 KAI_BEGIN
 
 class Tree;
+
+/// Executes code stored in Continuations via a stack of Contexts
 class Executor;
 
-KAI_TYPE_TRAITS(Executor, Number::Executor , Properties::Reflected); 
+// unsure why I forward reference the Executor class and its traits
+// and at this point I am too scared to ask why.
+KAI_TYPE_TRAITS(
+	Executor, 
+	Number::Executor, 
+	Properties::Reflected); 
 
-struct Executor : Reflected
+/// 
+/// An Executor processes code provided by Continuations via Contexts.
+///
+/// Each thread can have multiple Executors. There are no globals used.
+/// Executors themselves are Reflected Objects so can be read and written
+/// to and from Binary and StringStreams, sent across a network, stored to
+/// disk mid-execution and so on.
+///
+struct Executor : Reflected<Executor>
 {
+	///{@ Refleted methods
 	void Create();
 	bool Destroy();
+	///@}
 
 	void SetContinuation(Value<Continuation>);
 	void Continue(Value<Continuation>);
 	void ContinueOnly(Value<Continuation> C);
 	void Continue();
-
-	Object GetCompiler() const { return _compiler; }
-	void SetCompiler(Object c) { _compiler = c; }
 
 	void Eval(Object const &Q);
 	void Dump(Object const &Q);
@@ -101,10 +115,7 @@ struct Executor : Reflected
 
 	void ClearContext();
 	
-	void DropN();
-
-	// if ignoreQuote is true, then we resolve the identifier
-	// even if it is quoted
+	Object ResolvePop(Object, bool ignoreQuote = false) const;
 	Object Resolve(Object, bool ignoreQuote = false) const;
 	Object Resolve(const Label &) const;
 	Object Resolve(const Pathname &) const;
@@ -114,6 +125,7 @@ protected:
 
 	void Perform(Operation::Type op);
 	void ToArray();
+	void DropN();
 
 	void GetChildren();
 	void Expand();
@@ -145,14 +157,24 @@ private:
 	Object TryResolve(Pathname const &label) const;
 
 private:
-	Value<Continuation> _continuation;
+	/// The currently executing context
+	Value<Context> _current;
+	
+	/// The history of how we got here: A stack of Context objects.
+	/// The _current context is always at the top of the Stack.
 	Value<Stack> _context;
+	
+	/// The current data stack used by operations
 	Value<Stack> _data;
-	Object _compiler;
+	
+	/// break out of current context on next loop iteration
 	bool _break;
-	Tree *_tree;
+	
+	/// used to resolve identifier lookups
+	mutable Tree * const _tree;
+	
+	/// debugging
 	int _traceLevel;
-	int _stepNumber;
 };
 
 StringStream &operator<<(StringStream &, Executor const &);
@@ -160,4 +182,3 @@ BinaryStream &operator<<(BinaryStream &, Executor const &);
 BinaryPacket &operator>>(BinaryPacket &, Executor &);
 
 KAI_END
-

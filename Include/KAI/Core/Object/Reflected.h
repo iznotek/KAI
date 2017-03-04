@@ -11,7 +11,7 @@ template <class T> struct Pointer;
 struct StorageBase;
 
 ///
-/// \brief A Reflected object has access to the Registry that made it.
+/// A Reflected object has access to the Registry that made it.
 ///
 /// Refelected objects can overload Create() Destroy() and Delete() methods.
 /// While any type can be added to a Registry, Reflected types have access

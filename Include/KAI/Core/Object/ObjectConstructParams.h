@@ -1,11 +1,12 @@
 #pragma once
 
 #include <KAI/Core/Config/Base.h>
-#include "Handle.h"
-#include "Constness.h"
+#include <KAI/Core/Handle.h>
+#include <KAI/Core/Constness.h>
 
 KAI_BEGIN
 
+/// Used to make a new Object
 struct ObjectConstructParams
 {
 	const ClassBase *class_base;

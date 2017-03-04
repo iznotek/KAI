@@ -4,12 +4,25 @@
 
 KAI_BEGIN
 
-// Context for an Executor
+///
+/// Context for an Executor.
+///
+/// This is analogous to a stack frame in C/ASM
+///
 class Context
 {
+	/// What we are currently executing
 	Pointer<Continuation> _continuation;
+
+	/// Object used for name lookps. Can be empty.
 	Object _scope;
+	
+	/// The current 'instruction pointer' - or, index into the
+	/// code of the Continuation
 	int _ip;
+
+	/// all scopes are mapped onto a folder in the local file system
+	Pointer<FileSystem::Path> _path;
 
 public:
 	void Create(Pointer<Continuation>);

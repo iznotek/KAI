@@ -8,7 +8,7 @@ Specifically, each language (Pi, Rho Tau) are all implemented using the same cor
 
 ## Pi
 
-Post-fix notation with two stacks: one for data, one for context. Like Forth.
+Post-fix notation with two stacks: one for data, one for context. Looks like Forth.
 
 ## Rho
 
@@ -16,5 +16,7 @@ In-fix notation. Translated to Pi code. Looks like Python.
 
 ## Tau
 
-An interface definition language (IDL) used to generate network agent and proxies.
+An interface definition language (IDL) used to generate network agent and proxies. Looks like C#. Unsure why I made it a curly-brace thing, rather than based on Rho.
+
+I may change that it near future. No pun intended.
 
