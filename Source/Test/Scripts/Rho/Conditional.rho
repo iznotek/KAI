@@ -1,47 +1,51 @@
 'a = 0
 if (true)
-	'a = 1
+	'a = 1	// stores into block scope - doesn't affect a above
+	^a = 1	// explicitly writes to parent scope a. annoying. or not?
+	a = 1	// requires Executor re-work and scoping changes. try to find a locally, else look up context stack
 
-assert(a == 1)
+// or just get rid of "quoted" id's completely for everything?
 
-if (false)
-	'a = 2
-assert(a == 1)
 
+// this is how python works - duck-typing:
+a = 1
+a = "foo"	// error: cannot assign string to int
 if (true)
-	'a = 2
-else
-	'a = 3
-assert(a == 2)
+	a = 2	// uses parent scope's a, but only to method scope. which I don't have
+	// cannot make a new local a - which is probably a good thing. but:
+	'a = "bar"	// make a new local a distinct from outer a. good or bad? probably bad.
 
-if (false)
-	'a = 2
-else
-	'a = 3
-assert(a == 3)
+// what if "method" was enhanced with file-system structure?
 
-if (false)
-	'a = 1
-else if (false)
-	'a = 2
-else
-	'a = 3
-assert(a == 3)
+Foo/
+	method0
+	method1
+	method2
 
-if (false)
-	'a = 1
-else if (true)
-	'a = 2
-else
-	'a = 3
-assert(a == 2)
+// that would be annoying as fuck. all methods wouldn't be in same file.
+// but what if still had file-system based lookup as well as local file-space class lookup?
 
-'a = 0
-if (false)
+// ...
 
-	'a = 1
-else if (false)
-	'a = 2
-else if (false)
-	'a = 3
-assert(a == 0)
+// In either case, we need a "don't look further up the context stack" guard. maybe just a null Context
+// in the Executor._context stack? like, if it's a method call, don't look further back up stack
+// than the original call
+
+// I STILL like the idea of quoted id's. it allows for references:
+
+'a = 42
+'b = 'a
+assert(b == 'a)		// true
+b = 42				// this would currently change value of a. b is resolved immediately to 'a when pushed
+// but I could also currently say:
+b = "spam"			// which would be bad. b's type (well, a's type) would be chaning dynamically
+
+assert(a == 42)		// true
+assert(b == 42)		// fail: b is a label type
+assert(@b == 42)	// fail: maybe not fail? but now we're back to c-like semantics. is that bad???
+
+// what about multiple quotes?
+'d = 'b		// does this mean anything? Is this just inverting pointer semantics?
+assert(d == 'b)		// true
+asssert(@d == a)	// true. a is resolved when pushed (currently)
+asssert(@d == 42)	// true
