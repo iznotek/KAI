@@ -58,7 +58,7 @@ void PiTranslator::AppendTokenised(const TokenNode& tok)
 	case PiTokenEnumType::QuotedIdent:
 	{
 		auto label = Label(tok.Text().c_str());
-		label.Quoted = true;
+		label.SetQuoted(true);
 		AppendNew(label);
 		break;
 	}
@@ -216,6 +216,13 @@ void PiTranslator::AppendTokenised(const TokenNode& tok)
 	case PiTokenEnumType::Exists:
 		AppendOp(Operation::Exists);
 		break;
+
+	case PiTokenEnumType::Expand:
+		AppendOp(Operation::Expand);
+		break;
+	
+	case PiTokenEnumType::Tab:
+		return;
 
 	default:
 		KAI_TRACE_1(tok.type) << " Token not implemented: " << tok.ToString();

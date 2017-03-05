@@ -12,6 +12,29 @@ void RhoTranslator::TranslateToken(AstNodePtr node)
 {
 	switch (node->GetToken().type)
 	{
+	case TokenEnum::OpenParan:
+		for (auto ch : node->GetChildren())
+			TranslateNode(ch);
+		return;
+
+	case TokenEnum::Not:
+		TranslateNode(node->GetChild(0));
+		AppendOp(Operation::LogicalNot);
+		return;
+
+	case TokenEnum::True:
+		AppendOp(Operation::True);
+		return;
+
+	case TokenEnum::False:
+		AppendOp(Operation::False);
+		return;
+
+	case TokenEnum::Assert:
+		TranslateNode(node->GetChild(0));
+		AppendOp(Operation::Assert);
+		return;
+
 	case TokenEnum::While:
 		TranslateWhile(node);
 		return;
@@ -108,6 +131,10 @@ void RhoTranslator::TranslateToken(AstNodePtr node)
 		Append(New<Label>(Label(node->Text())));
 		return;
 
+	case TokenEnum::Pathname:
+		Append(New<Pathname>(Pathname(node->Text())));
+		return;
+
 	case TokenEnum::Yield:
 		//for (auto ch : node->Children)
 		//	Translate(ch);
@@ -123,6 +150,7 @@ void RhoTranslator::TranslateToken(AstNodePtr node)
 	}
 
 	Fail("Unsupported node %s", node->ToString().c_str());
+	KAI_TRACE_ERROR_1(Error);
 	KAI_NOT_IMPLEMENTED();
 }
 
@@ -134,29 +162,29 @@ void RhoTranslator::TranslateBinaryOp(AstNodePtr node, Operation::Type op)
 	AppendNew(Operation(op));
 }
 
-void RhoTranslator::TranslatePathname(AstNodePtr node)
-{
-	Pathname::Elements elements;
-	typedef Pathname::Element El;
-
-	for (auto ch : node->GetChildren())
-	{
-		switch (ch->GetToken().type)
-		{
-		case RhoTokenEnumType::Quote:
-			elements.push_back(El::Quote);
-			break;
-		case RhoTokenEnumType::Sep:
-			elements.push_back(El::Separator);
-			break;
-		case RhoTokenEnumType::Ident:
-			elements.push_back(Label(ch->GetTokenText()));
-			break;
-		}
-	}
-
-	AppendNew(Pathname(move(elements)));
-}
+//void RhoTranslator::TranslatePathname(AstNodePtr node)
+//{
+//	Pathname::Elements elements;
+//	typedef Pathname::Element El;
+//
+//	for (auto ch : node->GetChildren())
+//	{
+//		switch (ch->GetToken().type)
+//		{
+//		case RhoTokenEnumType::Quote:
+//			elements.push_back(El::Quote);
+//			break;
+//		case RhoTokenEnumType::Sep:
+//			elements.push_back(El::Separator);
+//			break;
+//		case RhoTokenEnumType::Ident:
+//			elements.push_back(Label(ch->GetTokenText()));
+//			break;
+//		}
+//	}
+//
+//	AppendNew(Pathname(move(elements)));
+//}
 
 void RhoTranslator::TranslateNode(AstNodePtr node)
 {
@@ -169,7 +197,7 @@ void RhoTranslator::TranslateNode(AstNodePtr node)
 	switch (node->GetType())
 	{
 	case AstEnum::Pathname:
-		TranslatePathname(node);
+		TranslateToken(node);
 		return;
 
 	case AstEnum::IndexOp:

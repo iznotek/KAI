@@ -53,6 +53,7 @@ bool RhoParser::Run(Structure st)
 		break;
 	}
 
+	ConsumeNewLines();
 	if (!stack.empty())
 		return Fail("[Internal] Error: Stack not empty after parsing");
 
@@ -64,7 +65,11 @@ bool RhoParser::Program()
 	while (!Try(TokenType::None) && !Failed)
 	{
 		ConsumeNewLines();
-		Statement(root);
+		if (!Statement(root))
+		{
+			Fail("Statement expected");
+			return false;
+		}
 	}
 
 	return true;
@@ -150,16 +155,15 @@ bool RhoParser::Statement(AstNodePtr block)
 	{
 		case TokenType::Assert:
 		{
-			Consume();
+			auto ass = NewNode(Consume());
 			if (!Expression())
 			{
-				CreateError("Assert needs an expression to test");
+				Fail(Lexer::CreateErrorMessage(Current(), "Assert needs an expression to test"));
 				return false;
 			}
 
-			auto ass = NewNode(Consume());
 			ass->Add(Pop());
-			Push(ass);
+			block->Add(ass);
 			goto finis;
 		}
 
@@ -198,6 +202,11 @@ bool RhoParser::Statement(AstNodePtr block)
 		}
 	}
 
+	ConsumeNewLines();
+
+	if (Try(TokenType::None))
+		return true;
+
 	if (!Expression())
 		return false;
 
@@ -216,16 +225,22 @@ finis:
 
 bool RhoParser::Expression()
 {
-	bool paran = Try(TokenType::OpenParan);
-	if (paran)
-	{
-		Consume();
-		if (!Expression())
-			return false;
-
-		Expect(TokenType::CloseParan);
-		return true;
-	}
+//	bool paran = Try(TokenType::OpenParan);
+//	if (paran)
+//	{
+//		auto exp = NewNode(Consume());
+//		if (!Logical())
+//			return false;
+//
+//		Expect(TokenType::CloseParan);
+//		exp->Add(Pop());
+//		Push(exp);
+//
+////		while (Factor())
+////			;
+////
+////		return true;
+//	}
 
 	if (!Logical())
 		return false;
@@ -258,7 +273,7 @@ bool RhoParser::Logical()
 		auto node = NewNode(Consume());
 		node->Add(Pop());
 		if (!Relational())
-			return Fail(Lexer::CreateErrorMessage(Current(), "Relational expected"));
+			return CreateError("Relational expected");
 
 		node->Add(Pop());
 		Push(node);
@@ -292,13 +307,23 @@ bool RhoParser::Additive()
 	// unary +/- operator
 	if (Try(TokenType::Plus) || Try(TokenType::Minus))
 	{
-		auto ty = Consume().type;
-		Consume();
+		auto uniSigned = NewNode(Consume());
 		if (!Term())
 			return CreateError("Term expected");
 
-		auto node = new AstNode(ty == TokenType::Plus ? NodeType::Positive : NodeType::Negative);
-		node->Add(Pop());
+		uniSigned->Add(Pop());
+		Push(uniSigned);
+		return true;
+	}
+
+	if (Try(TokenType::Not))
+	{
+		auto negate = NewNode(Consume());
+		if (!Additive())
+			return CreateError("Additive expected");
+
+		negate->Add(Pop());
+		Push(negate);
 		return true;
 	}
 
@@ -307,6 +332,7 @@ bool RhoParser::Additive()
 
 	while (Try(TokenType::Plus) || Try(TokenType::Minus))
 	{
+		//[1]
 		auto node = NewNode(Consume());
 		node->Add(Pop());
 		if (!Term())
@@ -342,11 +368,13 @@ bool RhoParser::Factor()
 {
 	if (Try(TokenType::OpenParan))
 	{
-		Consume();
+		auto exp = NewNode(Consume());
 		if (!Expression())
 			return CreateError("Expected an expression for a factor in parenthesis");
 
 		Expect(TokenType::CloseParan);
+		exp->Add(Pop());
+		Push(exp);
 		return true;
 	}
 
@@ -356,10 +384,15 @@ bool RhoParser::Factor()
 		do
 		{
 			Consume();
+			if (Try(TokenType::CloseSquareBracket))
+				break;
 			if (Expression())
 				list->Add(Pop());
 			else
-				list->Add(0);
+			{
+				Fail("Badly formed array");
+				return false;
+			}
 		}
 		while (Try(TokenType::Comma));
 
@@ -375,10 +408,13 @@ bool RhoParser::Factor()
 	if (Try(TokenType::Self))
 		return PushConsume();
 
-	while (Try(TokenType::Lookup))
-		PushConsume();
+//	while (Try(TokenType::Lookup))
+//		return PushConsume();
 
-	if (Try(TokenType::Ident) || Try(TokenType::Pathname))
+	if (Try(TokenType::Ident))
+		return ParseFactorIdent();
+
+	if (Try(TokenType::Pathname))
 		return ParseFactorIdent();
 
 	return false;
