@@ -12,7 +12,7 @@ KAI_BEGIN
 /// ***Note that this implies that the location of scripts on disk controls
 /// their lookup results***.
 ///
-struct Scoping
+struct ScopeResolution
 {
 	/// The 'global scope' for names. This is analogous to a filesystem.
 	Pointer<Tree> Tree;

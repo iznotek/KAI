@@ -1,11 +1,14 @@
 #pragma once
 
 #include <KAI/Core/Value.h>
+#include <KAI/Core/Process.h>
 #include <KAI/Core/Registry.h>
-#include <KAI/Language/Common/Process.h>
 
 KAI_BEGIN
 
+///
+/// Badly named and or scoped. This is just needed for Language systems.
+///
 struct ProcessCommon : Process
 {
 	template <class T>

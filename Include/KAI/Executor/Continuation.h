@@ -1,6 +1,7 @@
 #pragma once
 
 #include <KAI/Core/Type.h>
+#include <KAI/Trace/IDebugWrite.h>
 #include <KAI/Core/BinaryStream.h>
 #include <KAI/Core/BuiltinTypes/Array.h>
 #include <KAI/Core/BuiltinTypes/String.h>
@@ -8,11 +9,6 @@
 #include <KAI/Core/Object/Reflected.h>
 
 KAI_BEGIN
-
-struct IDebugWrite
-{
-	virtual void WriteDebugInfo(StringStream&, IDebugDescription const &) = 0;
-}
 
 // A code block represented as a sequence of Objects.
 struct Continuation : Reflected, IDebugWrite

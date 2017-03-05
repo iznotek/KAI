@@ -8,36 +8,53 @@
 #include <KAI/Core/Type/Number.h>
 #include <KAI/Executor/Continuation.h>
 
+// TODO: this is not language-specific
+#include <KAI/Language/Common/Process.h>
+
 KAI_BEGIN
 
-// A SignedContinuation is just like a normal Continuation, except is knows what to
-// expect on the stack when it is executed.
-struct SignedContinuation
+///
+/// A SignedContinuation is just like a normal Continuation, except is knows what to
+/// expect on the stack when it is executed, and what to return when leaving.
+///
+struct SignedContinuation : Language::Common::Process
 {
-	struct FormalParameter
+	struct Parameter
 	{
 		Type::Number type;
-		Label label;	// pass by ref if quoted
+		Label label;
 		FormalParameter() { }
+		FormalParameter(Label const &L) : label(L) { }
 		FormalParameter(Type::Number T, Label const &L) : type(T), label(L) { }
 	};
 
-	typedef std::vector<FormalParameter> FormalParameters;
+	typedef std::vector<Parameter> Parameters;
 	typedef std::vector<Type::Number> ReturnTuple;
 
-	Pointer<Continuation> cont;
-	FormalParameters params;
-	ReturnTuple return_tuple;
+	void Create(
+		Pointer<Array> params, 
+		Pointer<Array> rtypes, 
+		Pointer<Continuation> cont);
 
-	void Create(Pointer<Array> args, Pointer<Array> rtypes, Pointer<Continuation> cont, Pointer<Executor> exec);
 	Object GetContinuation() const { return cont; }
-	void Enter(Stack &);
-	void Leave(Stack &);
+	bool Enter(Stack<Object> &);
+	bool Leave(Stack<Object> &);
 	static void Register(Registry &R);
+
+private:
+	Pointer<Continuation> cont;
+	Parameters params;
+	ReturnTuple return_tuple;
 };
 
 StringStream &operator<<(StringStream &, SignedContinuation const &);
+BinaryStream &operator<<(StringStream &, SignedContinuation const &);
+StringStream &operator>>(StringStream &, SignedContinuation &);
 
-KAI_TYPE_TRAITS(SignedContinuation, Number::SignedContinuation, Properties::StringStreamInsert);
+KAI_TYPE_TRAITS(
+	SignedContinuation, 
+	Number::SignedContinuation, 
+	Properties::StringStreamInsert | Properties::BinaryStreaming
+);
 
 KAI_END

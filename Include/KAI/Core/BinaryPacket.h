@@ -5,8 +5,11 @@
 
 KAI_BEGIN
 
-/// A Binary-packet is a fixed-size sequence of bytes which allows only extraction
-/// this allows it to be used to extract data from network packets without copying.
+///
+/// A Binary-packet is a fixed-size sequence of bytes which allows only extraction.
+///
+/// This allows it to be used to extract data from network packets without copying.
+///
 class BinaryPacket
 {
 public:
@@ -37,8 +40,9 @@ public:
 		return Read(sizeof(pod), reinterpret_cast<Byte *>(&pod));
 	}
 
-	void SetRegistry(Registry *R) { registry = R; }
-	Registry *GetRegistry() const { return registry; }
+	// really should be constructed with registry, which should not change
+	// void SetRegistry(Registry *R) { registry = R; }
+	// Registry *GetRegistry() const { return registry; }
 
 	static void Register(Registry &, const char *);
 
@@ -50,10 +54,13 @@ StringStream &operator<<(StringStream &, BinaryPacket const &);
 BinaryStream &operator<<(BinaryStream &, BinaryPacket const &);
 BinaryPacket &operator>>(BinaryPacket &, BinaryPacket &);
 
-KAI_TYPE_TRAITS(BinaryPacket, Number::BinaryPacket
-	, Properties::StringStreamInsert
-	| Properties::BinaryStreamExtract
-	| Properties::BinaryStreamInsert)
+KAI_TYPE_TRAITS(
+	BinaryPacket, 
+	Number::BinaryPacket, 
+	Properties::StringStreamInsert
+	| Properties::BinaryStreaming
+	| Properties::Relational
+)
 
 KAI_END
 

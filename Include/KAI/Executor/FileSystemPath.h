@@ -1,20 +1,23 @@
 #pragma once
 
-#include <boost/filesystem.hpp>
-
+#include <boost/filesystem/path.hpp>
 #include <KAI/Stream.h>
 
 KAI_BEGIN
 
-StringStream& operator<<(StringStream &, boost::filesystem::path const &);
-StringStream& operator>>(StringStream &, boost::filesystem::path &);
-BinaryStream& operator<<(BinaryStream &, boost::filesystem::path const &);
-BinaryStream& operator>>(BinaryStream &, boost::filesystem::path &);
+typedef ::boost::filesystem::path FileSystemPath;
+
+///@{ Good example of adapting an external class to be a KAI system type
+StringStream& operator<<(StringStream &, FileSystemPath const &);
+StringStream& operator>>(StringStream &, FileSystemPath &);
+BinaryStream& operator<<(BinaryStream &, FileSystemPath const &);
+BinaryStream& operator>>(BinaryStream &, FileSystemPath &);
 
 KAI_TRAITS(
-	boost::filesystem::path,
+	FileSystemPath,
 	Number::FilesystemPath,
 	Properties::Streaming | Properties::Relational
 )
+///@}
 
 KAI_END

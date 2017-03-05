@@ -9,7 +9,9 @@
 
 KAI_BEGIN
 
-// A BinaryStream is-a BinaryPacket which can also resize and allows insertion
+///
+/// A BinaryStream is-a BinaryPacket which can also resize and allows insertion
+///
 class BinaryStream : public BinaryPacket
 {
 public:
@@ -25,6 +27,7 @@ public:
 	BinaryStream(int start_size) : bytes(start_size) { }
 
 	BinaryStream &Write(int len, const Byte *src);
+	
 	void Clear();
 
 	template <class POD>

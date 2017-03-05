@@ -16,9 +16,7 @@ KAI_BEGIN
 /// Common to all Objects that are stored in a Registry.
 ///
 /// An Object knows the Registry that made it, it's Class,
-/// and its Handle. 
-///
-/// Every Objecy has a unique Handle within its Registry.
+/// and its unique Handle. 
 ///
 class Object
 {
@@ -26,7 +24,7 @@ private:
 	/// The type of thing this Object is
 	const ClassBase *class_base;
 
-	/// The Registry used to make this object
+	/// The Registry used to make this Object
 	Registry *registry;
 
 	/// The unique Handle of this Object in its Registry

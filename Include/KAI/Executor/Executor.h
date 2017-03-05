@@ -6,6 +6,7 @@
 #include <KAI/Core/BuiltinTypes/Stack.h>
 #include <KAI/Core/Object/Reflected.h>
 #include <KAI/Core/Pathname.h>
+#include <KAI/Core/Executor/ScopeResolution.h>
 
 KAI_BEGIN
 
@@ -29,7 +30,7 @@ KAI_TYPE_TRAITS(
 /// to and from Binary and StringStreams, sent across a network, stored to
 /// disk mid-execution and so on.
 ///
-struct Executor : Reflected<Executor>
+struct Executor : Reflected<Executor>, I
 {
 	///{@ Refleted methods
 	void Create();
@@ -44,7 +45,7 @@ struct Executor : Reflected<Executor>
 	void Eval(Object const &Q);
 	void Dump(Object const &Q);
 	
-	std::string PrintStack() const;
+	void PrintStack(StringStream &);
 
 	template <class T>
 	Value<T> New()
@@ -120,13 +121,15 @@ struct Executor : Reflected<Executor>
 	Object Resolve(const Label &) const;
 	Object Resolve(const Pathname &) const;
 
-protected:
+private:
+	/// Pop top and convert it to a boolean value.
 	bool PopBool();
 
+	/// Perform an operation
 	void Perform(Operation::Type op);
+
 	void ToArray();
 	void DropN();
-
 	void GetChildren();
 	void Expand();
 	void MarkAndSweep();
@@ -140,15 +143,18 @@ protected:
 	static void DumpContinuation(Continuation const &, int);
 
 private:
+	/// Iterate over each element in a Container.
 	template <class C>
 	Value<Array> ForEach(C const &, Object const &);
+
+	/// Push all contents of any container onto the stack
 	template <class Cont>
 	void PushAll(const Cont &cont);
 
-	void TraceAll();
-	void Trace(const Object &);
-	void Trace(const Label &, const StorageBase&, StringStream &);
-	void Trace(const Object&, StringStream &);
+	// void TraceAll();
+	// void Trace(const Object &);
+	// void Trace(const Label &, const StorageBase&, StringStream &);
+	// void Trace(const Object&, StringStream &);
 	void ConditionalContextSwitch(Operation::Type);
 	Value<Continuation> NewContinuation(Value<Continuation> P);
 
@@ -158,7 +164,7 @@ private:
 
 private:
 	/// The currently executing context
-	Value<Context> _current;
+	Value<Context> CurrentContext() const { return _context->Top(); }
 	
 	/// The history of how we got here: A stack of Context objects.
 	/// The _current context is always at the top of the Stack.
@@ -171,7 +177,7 @@ private:
 	bool _break;
 	
 	/// used to resolve identifier lookups
-	mutable Tree * const _tree;
+	ScopeResolution _resolver;
 	
 	/// debugging
 	int _traceLevel;

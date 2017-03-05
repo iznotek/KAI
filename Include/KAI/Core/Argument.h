@@ -26,4 +26,4 @@ struct Argument<const T&>
 	typedef const T &Type;
 };
 
-	KAI_END
+KAI_END

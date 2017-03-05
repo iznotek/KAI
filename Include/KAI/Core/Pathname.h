@@ -8,7 +8,15 @@
 
 KAI_BEGIN
 
+///
 /// A Pathname represents a qualified name for an Object
+///
+/// I still don't like the internal relationship between Label and Pathname.
+/// Really, eveything should be a pathname and Labels should be removed.
+///
+/// BUT: sometimes you really just want Labels. Right? Right??
+///
+/// TODO: Delete Label and use Pathname everywhere instead.
 class Pathname
 {
 public:
