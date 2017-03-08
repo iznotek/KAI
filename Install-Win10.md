@@ -13,10 +13,28 @@ See here.
 
 ## Install Requirements
 
-	$ apt-get install cmake
-	$ apt-get install clang
-	$ apt-get install libboost-system-dev
-	$ apt-get install libboost-filesystem-dev
-	$ apt-get install libboost-program-options-dev
+Try the following from a Bash shell on Windows 10:
+
+	$ alias get='sudo apt-get install'
+	$ get clang
+	$ get cmake
+	$ get libboost-system-dev
+	$ get libboost-filesystem-dev
+	$ get libboost-program-options-dev
+
+### Problems
+
+(First)[http://stackoverflow.com/questions/17775390/clang-3-3-in-c1y-mode-cannot-parse-cstdio-header]
+
+And another:
+
+/home/christian/Desktop/local/KAI/Include/KAI/Core/Type/Traits.h:3:10: fatal error: 'boost/type_index.hpp' file not
+      found
+.#include <boost/type_index.hpp>
+
+
+
+
+
 
 
