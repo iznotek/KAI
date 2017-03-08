@@ -1,9 +1,9 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 2.8)
 
 set(name NetworkGenerate)
 project(${name})
 
-find_package(Boost 1.57.0 COMPONENTS program_options system REQUIRED)
+find_package(Boost 1.54.0 COMPONENTS program_options system REQUIRED)
 include_directories(${Boost_INCLUDE_DIR})
 
 #message(WARNING *** BD=${Boost_INCLUDE_DIR})

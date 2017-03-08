@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 2.8)
 project(Chat)
 set(SOURCE_ROOT ${KAI_HOME}/App/RakNetworkChat)
 link_libraries(Executor Core PiLang RhoLang RakNetLibStatic)
