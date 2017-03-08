@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.7)
+cmake_minimum_required(VERSION 3.5)
 
 set(libs Core Executor)#Network)
 
@@ -10,4 +10,4 @@ endforeach()
 include_directories(${LIBRARY_HOME}/Language/Include)
 include(${LIBRARY_HOME}/Language/CMakeLists.txt)
 
-include(${LIBRARY_HOME}/ImGui/CMakeLists.txt)
+# include(${LIBRARY_HOME}/ImGui/CMakeLists.txt)
