@@ -1,4 +1,5 @@
-#include "KAI/Language/Rho/RhoToken.h"
+#include <KAI/Language/Rho/RhoLang.h>
+#include <KAI/Language/Rho/RhoToken.h>
 
 KAI_BEGIN
 

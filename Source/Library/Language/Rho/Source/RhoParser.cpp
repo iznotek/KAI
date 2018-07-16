@@ -1,4 +1,4 @@
-#include <KAI/Language/Common/ParserCommon.h>
+#include <KAI/Language/Rho/RhoLang.h>
 #include <KAI/Language/Rho/RhoParser.h>
 
 KAI_BEGIN
@@ -100,7 +100,7 @@ void RhoParser::Function(AstNodePtr node)
 
 	Expect(TokenType::CloseParan);
 	Expect(TokenType::NewLine);
-	
+
 	AddBlock(fun);
 	node->Add(fun);
 }
@@ -176,7 +176,7 @@ bool RhoParser::Statement(AstNodePtr block)
 			block->Add(ret);
 			goto finis;
 		}
-		
+
 		case TokenType::While:
 		{
 			While(block);
@@ -194,7 +194,7 @@ bool RhoParser::Statement(AstNodePtr block)
 			IfCondition(block);
 			return true;
 		}
-		
+
 		case TokenType::Fun:
 		{
 			Function(block);

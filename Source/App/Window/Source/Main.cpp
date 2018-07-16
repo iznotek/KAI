@@ -2,11 +2,9 @@
 #include <stdio.h>
 
 #include <KAI/Console/Console.h>
-#include <KAI/ImGui/imgui.h>
-#include "./imgui_impl_glfw_gl3.h"
+#include "imgui/imgui.h"
+#include "imgui/examples/imgui_impl_opengl2.h"
 #include <stdio.h>
-#include <GL/gl3w.h> 
-#include <GLFW/glfw3.h>
 
 using namespace std;
 using namespace ImGui;

@@ -1,7 +1,9 @@
 #pragma once
 
-#include "KAI/Language/Common/AstNodeBase.h"
-#include "KAI/Language/Rho/RhoToken.h"
+#include <KAI/Language/Common/LangCommon.h>
+#include <KAI/Language/Common/Structure.h>
+#include <KAI/Language/Common/AstNodeBase.h>
+#include <KAI/Language/Rho/RhoToken.h>
 
 KAI_BEGIN
 

@@ -47,7 +47,7 @@ else()
 endif()
 
 # this was a bit of a nightmare, so it's in a re-usable .cmake file for other projects
-include(CMake/IncludeGtest.cmake)
+#include(CMake/IncludeGtest.cmake)
 
 # set common paths for all other projects to use
 set(SOURCE_HOME ${KAI_HOME}/Source)
@@ -57,6 +57,7 @@ set(TEST_HOME ${SOURCE_HOME}/Test)
 set(BIN_HOME ${KAI_HOME}/Bin)
 
 include_directories(${KAI_HOME}/Include)
+include_directories(${KAI_HOME}/External)
 
 set(dir ${KAI_HOME})
 set(CMAKE_ARCHIVE_OUTPUT_DIRECTORY "${dir}/Lib")
@@ -65,6 +66,8 @@ set(CMAKE_RUNTIME_OUTPUT_DIRECTORY "${dir}/Bin")
 
 link_directories(${HOME}/lib /usr/local/lib)
 link_directories(${KAI_HOME}/Lib/Debug)
+
+add_subdirectory(External)
 
 # make a new library
 macro(def_library name)
@@ -96,7 +99,8 @@ macro(def_platform_library name)
 endmacro()
 
 # make all top-level components
-set(TopLevels Library Test App)
+#set(TopLevels Library App Test)
+set(TopLevels Library App)
 foreach(top ${TopLevels})
     include(${SOURCE_HOME}/${top}/CMakeLists.txt)
 endforeach()

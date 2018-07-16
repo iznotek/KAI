@@ -1,6 +1,9 @@
+#include <KAI/Language/Rho/RhoLang.h>
+#include <KAI/Language/Rho/RhoTranslator.h>
+
 #include <KAI/Executor/Operation.h>
 #include <KAI/Core/BuiltinTypes.h>
-#include <KAI/Language/Rho/RhoTranslator.h>
+
 #include <boost/lexical_cast.hpp>
 #include <boost/range/adaptor/reversed.hpp>
 

@@ -1,8 +1,6 @@
+#include <KAI/Language/Rho/RhoLang.h>
 #include <fstream>
 #include <KAI/Core/File.h>
-
-#include "KAI/Executor/Executor.h"
-#include "KAI/Language/Rho/RhoLang.h"
 
 using namespace std;
 

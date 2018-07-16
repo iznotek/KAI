@@ -1,4 +1,4 @@
-#include "KAI/Language/Rho/RhoAstNode.h"
+#include <KAI/Language/Rho/RhoLang.h>
 
 KAI_BEGIN
 

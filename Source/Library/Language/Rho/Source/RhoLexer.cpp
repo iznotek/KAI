@@ -1,10 +1,10 @@
-#include <KAI/Language/Rho/RhoLexer.h>
+#include <KAI/Language/Rho/RhoLang.h>
 
 using namespace std;
 
 KAI_BEGIN
 
-void RhoLexer::AddKeyWords() 
+void RhoLexer::AddKeyWords()
 {
 	keyWords["if"] = Enum::If;
 	keyWords["else"] = Enum::Else;
@@ -52,7 +52,7 @@ bool RhoLexer::NextToken()
 	case '!': return AddIfNext('=', Enum::NotEquiv, Enum::Not);
 	case '&': return AddIfNext('&', Enum::And, Enum::BitAnd);
 	case '|': return AddIfNext('|', Enum::Or, Enum::BitOr);
-	case '<': return AddIfNext('=', Enum::LessEquiv, Enum::Less); 
+	case '<': return AddIfNext('=', Enum::LessEquiv, Enum::Less);
 	case '>': return AddIfNext('=', Enum::GreaterEquiv, Enum::Greater);
 	case '"': return LexString(); // "
 	case '\t': return Add(Enum::Tab);
